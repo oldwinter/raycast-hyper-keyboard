@@ -1,0 +1,103 @@
+{
+  "name": "hyper-keyboard",
+  "version": "0.1.0",
+  "type": "module",
+  "private": true,
+  "title": "Hyper Keyboard",
+  "description": "Visualize every Hyper key shortcut as a global keyboard",
+  "icon": "icon.png",
+  "author": "oldwinter",
+  "license": "MIT",
+  "platforms": ["macOS"],
+  "categories": ["Productivity"],
+  "keywords": ["hyper", "keyboard", "shortcuts", "hotkeys", "keymap"],
+  "commands": [
+    {
+      "name": "show-hyper-keyboard",
+      "title": "Show Hyper Keyboard",
+      "subtitle": "Visual Keymap",
+      "description": "Show all configured Hyper shortcuts on a visual keyboard",
+      "mode": "view"
+    },
+    {
+      "name": "browse-hyper-shortcuts",
+      "title": "Browse Hyper Shortcuts",
+      "subtitle": "Searchable Keymap",
+      "description": "Search and inspect configured Hyper shortcuts",
+      "mode": "view"
+    }
+  ],
+  "preferences": [
+    {
+      "name": "readRaycastSnapshots",
+      "title": "Raycast Settings",
+      "description": "Read the newest local Raycast settings snapshot without modifying it",
+      "type": "checkbox",
+      "label": "Automatically discover Raycast Hyper shortcuts",
+      "default": true,
+      "required": false
+    },
+    {
+      "name": "raycastSnapshotsDirectory",
+      "title": "Raycast Snapshot Directory",
+      "description": "Optional override for the Raycast cloud-sync settings-snapshots directory",
+      "type": "directory",
+      "required": false
+    },
+    {
+      "name": "readCanvas",
+      "title": "Obsidian Canvas",
+      "description": "Use the Canvas to add labels, notes, icons, and non-Raycast shortcuts",
+      "type": "checkbox",
+      "label": "Import the Hyper keyboard Canvas",
+      "default": true,
+      "required": false
+    },
+    {
+      "name": "canvasPath",
+      "title": "Canvas File",
+      "description": "Optional Canvas override; the oldwinter-notes Hyper keyboard Canvas is detected automatically",
+      "type": "file",
+      "required": false
+    },
+    {
+      "name": "customConfigPath",
+      "title": "Custom JSON",
+      "description": "Optional versioned JSON file for overrides and shortcuts from other tools",
+      "type": "file",
+      "required": false
+    },
+    {
+      "name": "showUnassignedKeys",
+      "title": "Keyboard Layout",
+      "description": "Keep empty keys visible so the visual map remains a recognizable keyboard",
+      "type": "checkbox",
+      "label": "Show unassigned keys",
+      "default": true,
+      "required": false
+    }
+  ],
+  "scripts": {
+    "build": "ray build -e dist",
+    "dev": "ray develop",
+    "lint": "ray lint",
+    "fix-lint": "ray lint --fix",
+    "preview": "vite-node scripts/render-current.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@raycast/api": "^1.104.23",
+    "react": "^19.2.4"
+  },
+  "devDependencies": {
+    "@raycast/eslint-config": "^2.1.1",
+    "@types/node": "^24.3.0",
+    "@types/react": "^19.2.10",
+    "eslint": "^9.39.2",
+    "prettier": "^3.8.1",
+    "typescript": "^5.9.2",
+    "vitest": "^3.2.4"
+  }
+}

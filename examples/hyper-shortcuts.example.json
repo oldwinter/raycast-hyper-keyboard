@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "shortcuts": [
+    {
+      "key": "Q",
+      "title": "Open Cubox",
+      "description": "Shortcut configured outside Raycast",
+      "appPath": "/Applications/Cubox.app"
+    },
+    {
+      "key": "Space",
+      "title": "Raycast Notes",
+      "icon": "📝",
+      "replace": false
+    }
+  ]
+}
