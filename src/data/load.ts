@@ -7,6 +7,7 @@ import { defaultRaycastSnapshotsDirectory, findLatestRaycastSnapshot, parseRayca
 import type { Preferences, ShortcutAssignment, ShortcutMap } from "../types";
 import { keyOrder } from "../layout";
 import { pathExists } from "../lib/files";
+import { missingCanvasFileWarning } from "../lib/load-status";
 
 const DEFAULT_CANVAS_PATH = path.join(
   os.homedir(),
@@ -112,8 +113,8 @@ export async function loadShortcutMap(preferences: Preferences): Promise<Shortcu
       } catch (error) {
         warnings.push(`Canvas: ${error instanceof Error ? error.message : String(error)}`);
       }
-    } else if (preferences.canvasPath) {
-      warnings.push(`Canvas file not found: ${canvasPath}`);
+    } else {
+      warnings.push(missingCanvasFileWarning(canvasPath));
     }
   }
 

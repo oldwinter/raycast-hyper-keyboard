@@ -13,6 +13,7 @@ Hyper Keyboard is a personal Raycast extension that turns configured Hyper short
 - Resolves installed Raycast extension titles and icons from their local manifests.
 - Imports labels, notes, and images from the existing Hyper keyboard Canvas.
 - Highlights stale Raycast snapshots instead of presenting old data as current.
+- Surfaces missing Canvas, missing or stale snapshots, and failed JSON as warnings with a next step.
 - Supports explicit JSON overrides for shortcuts configured in other applications.
 
 ## Run locally
@@ -44,7 +45,9 @@ The extension auto-detects these personal defaults when they exist:
 ~/oldwinter-notes/Atlas/Canvas/快捷键键盘布局/键盘快捷键映射图 - Hyper - macOS.canvas
 ```
 
-Every path can be overridden in Raycast Preferences. Raycast does not expose a public API for enumerating global command hotkeys, so the extension deliberately reads the newest cloud-sync snapshot rather than depending on the private live database. Snapshot age is shown as a warning.
+Every path can be overridden in Raycast Preferences. The Canvas default is a personal vault path; on another Mac that file is usually missing, and that is expected. Show and Browse then list the warning and keep **Open Extension Preferences** and **Refresh Keymap** so you can set Canvas File, point at a snapshot directory, or add Custom JSON. Load failures use the same actions instead of a dead error page.
+
+Raycast does not expose a public API for enumerating global command hotkeys, so the extension deliberately reads the newest cloud-sync snapshot rather than depending on the private live database. Snapshot age is shown as a warning.
 
 ## Custom JSON
 

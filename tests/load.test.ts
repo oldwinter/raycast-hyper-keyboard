@@ -2,7 +2,8 @@ import { mkdtemp, mkdir, utimes, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
-import { loadShortcutMap } from "../src/data/load";
+import { defaultCanvasPath, loadShortcutMap } from "../src/data/load";
+import { pathExists } from "../src/lib/files";
 
 function hyperHotkey(code: number) {
   return {
@@ -76,5 +77,28 @@ describe("shortcut source merger", () => {
       expect.objectContaining({ title: "Do Something Else", source: "custom" }),
     ]);
     expect(result.warnings).toContain("The newest Raycast settings snapshot is 20 days old");
+  });
+
+  it("warns when the Canvas file is missing, including the default personal path", async () => {
+    const missingPath = path.join(os.tmpdir(), "hyper-missing-canvas", "map.canvas");
+    const explicit = await loadShortcutMap({
+      readCanvas: true,
+      canvasPath: missingPath,
+      readRaycastSnapshots: false,
+      showUnassignedKeys: true,
+    });
+    expect(explicit.warnings).toContain(`Canvas file not found: ${missingPath}`);
+    expect(explicit.keys.size).toBe(0);
+
+    const fallback = await loadShortcutMap({
+      readCanvas: true,
+      readRaycastSnapshots: false,
+      showUnassignedKeys: true,
+    });
+    if (await pathExists(defaultCanvasPath())) {
+      expect(fallback.sourceFiles).toContain(defaultCanvasPath());
+    } else {
+      expect(fallback.warnings).toContain(`Canvas file not found: ${defaultCanvasPath()}`);
+    }
   });
 });

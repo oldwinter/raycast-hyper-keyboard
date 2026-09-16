@@ -1,5 +1,6 @@
 import { Action, ActionPanel, Color, Icon, Image, Keyboard, List, openExtensionPreferences } from "@raycast/api";
 import { KEYBOARD_ROWS } from "../layout";
+import { browseWarningItems, warningDetailMarkdown } from "../lib/load-status";
 import type { Preferences, ShortcutAssignment, ShortcutMap } from "../types";
 
 interface ShortcutBrowserProps {
@@ -74,8 +75,36 @@ function ShortcutActions({
 }
 
 export function ShortcutBrowser({ shortcutMap, preferences, isLoading, onRefresh }: ShortcutBrowserProps) {
+  const warningItems = browseWarningItems(shortcutMap.warnings);
+
   return (
     <List isLoading={isLoading} isShowingDetail searchBarPlaceholder="Search a key, app, action, or source…">
+      {warningItems.length > 0 ? (
+        <List.Section title="Source warnings" subtitle="Open Extension Preferences or Refresh Keymap">
+          {warningItems.map((item) => (
+            <List.Item
+              key={item.title}
+              icon={{ source: Icon.Warning, tintColor: Color.Orange }}
+              title={item.title}
+              subtitle={item.subtitle}
+              keywords={["warning", "preferences", "refresh", item.title]}
+              accessories={[{ tag: { value: "Next step", color: Color.Orange } }]}
+              detail={<List.Item.Detail markdown={warningDetailMarkdown(item.title)} />}
+              actions={
+                <ActionPanel>
+                  <Action
+                    title="Refresh Keymap"
+                    icon={Icon.ArrowClockwise}
+                    onAction={onRefresh}
+                    shortcut={Keyboard.Shortcut.Common.Refresh}
+                  />
+                  <Action title="Open Extension Preferences" icon={Icon.Gear} onAction={openExtensionPreferences} />
+                </ActionPanel>
+              }
+            />
+          ))}
+        </List.Section>
+      ) : null}
       {KEYBOARD_ROWS.map((row) => {
         const visibleKeys = row.keys.filter((key) => preferences.showUnassignedKeys || shortcutMap.keys.has(key));
         if (visibleKeys.length === 0) return null;
