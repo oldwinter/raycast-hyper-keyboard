@@ -77,4 +77,30 @@ describe("shortcut source merger", () => {
     ]);
     expect(result.warnings).toContain("The newest Raycast settings snapshot is 20 days old");
   });
+
+  it("skips Canvas when readCanvas is on but Canvas File is unset", async () => {
+    const result = await loadShortcutMap({
+      readCanvas: true,
+      readRaycastSnapshots: false,
+      showUnassignedKeys: true,
+    });
+
+    expect(result.sourceFiles).toEqual([]);
+    expect(result.keys.size).toBe(0);
+    expect(result.warnings.join("\n")).not.toMatch(/oldwinter-notes/);
+  });
+
+  it("warns only for an explicit missing Canvas File", async () => {
+    const missing = path.join(os.tmpdir(), "hyper-missing-canvas", "map.canvas");
+    const result = await loadShortcutMap({
+      readCanvas: true,
+      canvasPath: missing,
+      readRaycastSnapshots: false,
+      showUnassignedKeys: true,
+    });
+
+    expect(result.sourceFiles).toEqual([]);
+    expect(result.warnings).toEqual([`Canvas file not found: ${missing}`]);
+    expect(result.warnings.join("\n")).not.toMatch(/oldwinter-notes/);
+  });
 });

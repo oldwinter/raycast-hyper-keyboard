@@ -37,14 +37,15 @@ Sources are merged in this order:
 2. **Raycast snapshot** confirms global `⌃⌥⇧⌘` bindings and supplies installed app or extension icons.
 3. **Custom JSON** replaces a key by default, or appends when `replace` is `false`.
 
-The extension auto-detects these personal defaults when they exist:
+The extension auto-detects the local Raycast settings snapshot directory when it exists:
 
 ```text
 ~/Library/Application Support/com.raycast.macos/cloud-sync/settings-snapshots/
-~/oldwinter-notes/Atlas/Canvas/快捷键键盘布局/键盘快捷键映射图 - Hyper - macOS.canvas
 ```
 
-Every path can be overridden in Raycast Preferences. Raycast does not expose a public API for enumerating global command hotkeys, so the extension deliberately reads the newest cloud-sync snapshot rather than depending on the private live database. Snapshot age is shown as a warning.
+Canvas is not auto-detected. Set Preferences → Canvas File to import one. A personal vault path such as `~/oldwinter-notes/Atlas/Canvas/快捷键键盘布局/键盘快捷键映射图 - Hyper - macOS.canvas` is only an example.
+
+Every other path can be overridden in Raycast Preferences. Raycast does not expose a public API for enumerating global command hotkeys, so the extension deliberately reads the newest cloud-sync snapshot rather than depending on the private live database. Snapshot age is shown as a warning.
 
 ## Custom JSON
 
