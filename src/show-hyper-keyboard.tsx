@@ -1,6 +1,7 @@
 import {
   Action,
   ActionPanel,
+  Color,
   Detail,
   Icon,
   Keyboard,
@@ -9,6 +10,7 @@ import {
   useNavigation,
 } from "@raycast/api";
 import { ShortcutBrowser } from "./components/shortcut-browser";
+import { showKeyboardMarkdown } from "./lib/load-status";
 import type { Preferences } from "./types";
 import { useShortcutMap } from "./lib/use-shortcut-map";
 
@@ -16,20 +18,32 @@ export default function ShowHyperKeyboard() {
   const preferences = getPreferenceValues<Preferences>();
   const { data, previewPath, error, isLoading, refresh } = useShortcutMap();
   const { push } = useNavigation();
+  const warnings = data?.warnings ?? [];
   const image = previewPath
     ? `![Hyper Keyboard](${encodeURI(previewPath)}?raycast-width=1080&v=${data?.loadedAt.getTime() ?? 0})`
     : undefined;
-  const markdown = error
-    ? `# Unable to load Hyper Keyboard\n\n${error}`
-    : image
-      ? image
-      : "# Hyper Keyboard\n\nReading your configured shortcuts…";
+  const markdown = showKeyboardMarkdown({ error, image, warnings });
 
   return (
     <Detail
       navigationTitle="Hyper Keyboard"
       isLoading={isLoading}
       markdown={markdown}
+      metadata={
+        error || warnings.length > 0 ? (
+          <Detail.Metadata>
+            {error ? <Detail.Metadata.Label title="Error" text={{ value: error, color: Color.Red }} /> : null}
+            {warnings.map((warning, index) => (
+              <Detail.Metadata.Label
+                key={`${index}:${warning}`}
+                title={`Warning ${index + 1}`}
+                text={{ value: warning, color: Color.Orange }}
+              />
+            ))}
+            <Detail.Metadata.Label title="Next step" text="Open Extension Preferences or Refresh Keymap" />
+          </Detail.Metadata>
+        ) : undefined
+      }
       actions={
         <ActionPanel>
           {data ? (

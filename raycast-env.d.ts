@@ -14,7 +14,7 @@ type ExtensionPreferences = {
   "raycastSnapshotsDirectory"?: string,
   /** Obsidian Canvas - Use the Canvas to add labels, notes, icons, and non-Raycast shortcuts */
   "readCanvas": boolean,
-  /** Canvas File - Optional Canvas override; the oldwinter-notes Hyper keyboard Canvas is detected automatically */
+  /** Canvas File - Optional Canvas file. Leave empty to skip Canvas; no personal vault is assumed */
   "canvasPath"?: string,
   /** Custom JSON - Optional versioned JSON file for overrides and shortcuts from other tools */
   "customConfigPath"?: string,
