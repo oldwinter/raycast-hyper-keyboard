@@ -32,4 +32,31 @@ describe("keyboard preview", () => {
     expect(svg).toContain(">F12<");
     expect(svg).toContain(">Space<");
   });
+
+  it("keeps the keyboard and shortcut visible when an icon URL is malformed", async () => {
+    const map: ShortcutMap = {
+      keys: new Map([
+        [
+          "A",
+          {
+            key: "A",
+            assignments: [
+              { key: "A", title: "Arc", source: "canvas", icon: { kind: "url", value: "not a valid image.png" } },
+            ],
+          },
+        ],
+      ]),
+      sourceFiles: [],
+      warnings: [],
+      loadedAt: new Date("2026-08-31T00:00:00Z"),
+    };
+    const iconDirectory = await mkdtemp(path.join(os.tmpdir(), "hyper-preview-"));
+    const svg = await renderKeyboardSvg(map, iconDirectory);
+    expect(svg).toContain("Hyper Keyboard");
+    expect(svg).toContain("1 assigned · 0 conflicts");
+    expect(svg).toContain(">Arc</text>");
+    expect(svg).toContain(">F12<");
+    expect(svg).toContain(">Space<");
+    expect(svg).toContain('class="emoji">⌨️</text>');
+  });
 });

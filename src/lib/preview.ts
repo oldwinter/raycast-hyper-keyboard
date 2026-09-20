@@ -144,14 +144,14 @@ async function remoteIconPath(url: string, iconDirectory: string): Promise<strin
 async function renderIcon(icon: IconReference | undefined, iconDirectory: string): Promise<RenderedIcon> {
   if (!icon) return {};
   if (icon.kind === "emoji") return { emoji: icon.value };
-  const filePath =
-    icon.kind === "app"
-      ? await appIconPath(icon.value, iconDirectory)
-      : icon.kind === "url"
-        ? await remoteIconPath(icon.value, iconDirectory)
-        : icon.value;
-  if (!filePath) return { emoji: "⌨️" };
   try {
+    const filePath =
+      icon.kind === "app"
+        ? await appIconPath(icon.value, iconDirectory)
+        : icon.kind === "url"
+          ? await remoteIconPath(icon.value, iconDirectory)
+          : icon.value;
+    if (!filePath) return { emoji: "⌨️" };
     return { dataUri: await fileDataUri(filePath) };
   } catch {
     return { emoji: "⌨️" };
