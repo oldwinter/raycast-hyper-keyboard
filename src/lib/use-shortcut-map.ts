@@ -13,7 +13,6 @@ interface ShortcutMapState {
 }
 
 export function useShortcutMap(): ShortcutMapState {
-  const preferences = getPreferenceValues<Preferences>();
   const [data, setData] = useState<ShortcutMap>();
   const [previewPath, setPreviewPath] = useState<string>();
   const [error, setError] = useState<string>();
@@ -24,6 +23,7 @@ export function useShortcutMap(): ShortcutMapState {
 
   useEffect(() => {
     let isActive = true;
+    const preferences = getPreferenceValues<Preferences>();
     setIsLoading(true);
     setError(undefined);
     void loadShortcutMap(preferences)

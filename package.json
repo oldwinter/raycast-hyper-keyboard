@@ -56,7 +56,7 @@
     {
       "name": "canvasPath",
       "title": "Canvas File",
-      "description": "Optional Canvas override; the oldwinter-notes Hyper keyboard Canvas is detected automatically",
+      "description": "Optional Canvas file. Leave empty to skip Canvas; no personal vault is assumed",
       "type": "file",
       "required": false
     },
