@@ -75,7 +75,9 @@ describe("shortcut source merger", () => {
     expect(result.keys.get("D")?.assignments).toEqual([
       expect.objectContaining({ title: "Do Something Else", source: "custom" }),
     ]);
-    expect(result.warnings).toContain("The newest Raycast settings snapshot is 20 days old");
+    expect(result.warnings).toContain(
+      "The newest Raycast settings snapshot is 20 days old. Export fresh settings or check the snapshots directory in Extension Preferences.",
+    );
   });
 
   it("skips Canvas when readCanvas is on but Canvas File is unset", async () => {
@@ -100,7 +102,9 @@ describe("shortcut source merger", () => {
     });
 
     expect(result.sourceFiles).toEqual([]);
-    expect(result.warnings).toEqual([`Canvas file not found: ${missing}`]);
+    expect(result.warnings).toEqual([
+      `Canvas file not found: ${missing}. Check the Canvas path in Extension Preferences.`,
+    ]);
     expect(result.warnings.join("\n")).not.toMatch(/oldwinter-notes/);
   });
 });

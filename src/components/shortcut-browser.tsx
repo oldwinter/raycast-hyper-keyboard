@@ -91,6 +91,28 @@ export function ShortcutBrowser({ shortcutMap, preferences, isLoading, onRefresh
         title={empty.title}
         description={empty.description}
       />
+      {shortcutMap.warnings.length > 0 ? (
+        <List.Section title="Needs attention" subtitle={`${shortcutMap.warnings.length} warnings`}>
+          {shortcutMap.warnings.map((warning, index) => (
+            <List.Item
+              key={`warning-${index}`}
+              icon={{ source: Icon.ExclamationMark, tintColor: Color.Orange }}
+              title={warning}
+              actions={
+                <ActionPanel>
+                  <Action title="Open Extension Preferences" icon={Icon.Gear} onAction={openExtensionPreferences} />
+                  <Action
+                    title="Refresh Keymap"
+                    icon={Icon.ArrowClockwise}
+                    onAction={onRefresh}
+                    shortcut={Keyboard.Shortcut.Common.Refresh}
+                  />
+                </ActionPanel>
+              }
+            />
+          ))}
+        </List.Section>
+      ) : null}
       {KEYBOARD_ROWS.map((row) => {
         const visibleKeys = row.keys.filter((key) => preferences.showUnassignedKeys || shortcutMap.keys.has(key));
         if (visibleKeys.length === 0) return null;
