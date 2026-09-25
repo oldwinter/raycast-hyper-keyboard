@@ -1,5 +1,3 @@
-import os from "node:os";
-import path from "node:path";
 import { stat } from "node:fs/promises";
 import { parseCanvasShortcuts } from "./canvas";
 import { parseCustomShortcuts } from "./custom";
@@ -7,15 +5,6 @@ import { defaultRaycastSnapshotsDirectory, findLatestRaycastSnapshot, parseRayca
 import type { Preferences, ShortcutAssignment, ShortcutMap } from "../types";
 import { keyOrder } from "../layout";
 import { pathExists } from "../lib/files";
-
-const DEFAULT_CANVAS_PATH = path.join(
-  os.homedir(),
-  "oldwinter-notes",
-  "Atlas",
-  "Canvas",
-  "快捷键键盘布局",
-  "键盘快捷键映射图 - Hyper - macOS.canvas",
-);
 
 function comparable(value: string): string {
   return value.toLowerCase().replace(/[^a-z0-9\u4e00-\u9fff]/g, "");
@@ -103,8 +92,8 @@ export async function loadShortcutMap(preferences: Preferences): Promise<Shortcu
   const warnings: string[] = [];
   const sourceFiles: string[] = [];
 
-  if (preferences.readCanvas) {
-    const canvasPath = preferences.canvasPath || DEFAULT_CANVAS_PATH;
+  if (preferences.readCanvas && preferences.canvasPath) {
+    const canvasPath = preferences.canvasPath;
     if (await pathExists(canvasPath)) {
       try {
         (await parseCanvasShortcuts(canvasPath)).forEach((assignment) => addAssignment(assignments, assignment));
@@ -112,7 +101,7 @@ export async function loadShortcutMap(preferences: Preferences): Promise<Shortcu
       } catch (error) {
         warnings.push(`Canvas: ${error instanceof Error ? error.message : String(error)}`);
       }
-    } else if (preferences.canvasPath) {
+    } else {
       warnings.push(`Canvas file not found: ${canvasPath}`);
     }
   }
@@ -156,8 +145,4 @@ export async function loadShortcutMap(preferences: Preferences): Promise<Shortcu
   );
 
   return { keys, sourceFiles: [...new Set(sourceFiles)], warnings, loadedAt: new Date() };
-}
-
-export function defaultCanvasPath(): string {
-  return DEFAULT_CANVAS_PATH;
 }
