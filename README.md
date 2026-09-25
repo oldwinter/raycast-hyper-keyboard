@@ -87,4 +87,5 @@ npm run typecheck # strict TypeScript
 npm run lint      # Raycast manifest, ESLint, and Prettier
 npm run build     # production Raycast bundle
 npm run preview   # render the current local keymap outside Raycast
+npm run deps      # install vite-node when preview says it is missing
 ```

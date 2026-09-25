@@ -82,7 +82,8 @@
     "dev": "ray develop",
     "lint": "ray lint",
     "fix-lint": "ray lint --fix",
-    "preview": "vite-node scripts/render-current.ts",
+    "preview": "node scripts/preview.mjs",
+    "deps": "npm install -D vite-node",
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit"
