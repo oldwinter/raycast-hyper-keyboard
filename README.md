@@ -46,7 +46,7 @@ The extension auto-detects the local Raycast settings snapshot directory when it
 ~/Library/Application Support/com.raycast.macos/cloud-sync/settings-snapshots/
 ```
 
-Canvas is not auto-detected. Set Preferences → Canvas File to import one. A personal vault path such as `~/oldwinter-notes/Atlas/Canvas/快捷键键盘布局/键盘快捷键映射图 - Hyper - macOS.canvas` is only an example.
+Canvas is not auto-detected. Set Preferences → Canvas File to import one. A personal vault path such as `~/oldwinter-notes/Atlas/Canvas/快捷键键盘布局/键盘快捷键映射图 - Hyper - macOS.canvas` is only an example. A missing Canvas file is an expected state, not an error: the keyboard still renders Raycast and JSON shortcuts, and the missing source is surfaced as a warning with a next step.
 
 Every other path can be overridden in Raycast Preferences. Raycast does not expose a public API for enumerating global command hotkeys, so the extension deliberately reads the newest cloud-sync snapshot rather than depending on the private live database. Snapshot age is shown as a warning.
 

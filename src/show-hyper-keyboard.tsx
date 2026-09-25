@@ -29,10 +29,15 @@ export default function ShowHyperKeyboard() {
           .join("\n\n")
       : `![Hyper Keyboard](${encodeURI(previews.overviewPath)}?raycast-width=1080&v=${version})`
     : undefined;
+  const warnings = data?.warnings ?? [];
+  const warningMarkdown =
+    warnings.length > 0
+      ? `\n\n---\n\n### ⚠ Needs attention\n\n${warnings.map((warning) => `- ${warning}`).join("\n")}`
+      : "";
   const markdown = error
-    ? `# Unable to load Hyper Keyboard\n\n${error}`
+    ? `# Unable to load Hyper Keyboard\n\n${error}\n\nCheck your source paths in **Extension Preferences**, then run **Refresh Keymap** below.`
     : image
-      ? image
+      ? `${image}${warningMarkdown}`
       : "# Hyper Keyboard\n\nReading your configured shortcuts…";
 
   return (
@@ -40,6 +45,17 @@ export default function ShowHyperKeyboard() {
       navigationTitle={isZoomed ? "Hyper Keyboard · Zoomed" : "Hyper Keyboard"}
       isLoading={isLoading}
       markdown={markdown}
+      metadata={
+        warnings.length > 0 ? (
+          <Detail.Metadata>
+            <Detail.Metadata.Label title="Warnings" text={`${warnings.length}`} icon={Icon.ExclamationMark} />
+            {warnings.map((warning, index) => (
+              <Detail.Metadata.Label key={index} title={index === 0 ? "Sources" : ""} text={warning} />
+            ))}
+            <Detail.Metadata.Separator />
+          </Detail.Metadata>
+        ) : undefined
+      }
       actions={
         <ActionPanel>
           {previews ? (

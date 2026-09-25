@@ -14,6 +14,7 @@ interface ShortcutMapState {
 
 export function useShortcutMap(): ShortcutMapState {
   const preferences = getPreferenceValues<Preferences>();
+  const preferencesSignature = JSON.stringify(preferences);
   const [data, setData] = useState<ShortcutMap>();
   const [previews, setPreviews] = useState<KeyboardPreviewPaths>();
   const [error, setError] = useState<string>();
@@ -26,7 +27,7 @@ export function useShortcutMap(): ShortcutMapState {
     let isActive = true;
     setIsLoading(true);
     setError(undefined);
-    void loadShortcutMap(preferences)
+    void loadShortcutMap(JSON.parse(preferencesSignature) as Preferences)
       .then(async (nextData) => {
         const nextPreviews = await generateKeyboardPreview(nextData, environment.supportPath);
         if (!isActive) return;
@@ -43,7 +44,7 @@ export function useShortcutMap(): ShortcutMapState {
     return () => {
       isActive = false;
     };
-  }, [revision]);
+  }, [revision, preferencesSignature]);
 
   return { data, previews, error, isLoading, refresh };
 }

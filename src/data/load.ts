@@ -102,7 +102,9 @@ export async function loadShortcutMap(preferences: Preferences): Promise<Shortcu
         warnings.push(`Canvas: ${error instanceof Error ? error.message : String(error)}`);
       }
     } else {
-      warnings.push(`Canvas file not found: ${canvasPath}`);
+      warnings.push(
+        `Canvas file not found: ${canvasPath}. Check the Canvas path in Extension Preferences.`,
+      );
     }
   }
 
@@ -116,9 +118,14 @@ export async function loadShortcutMap(preferences: Preferences): Promise<Shortcu
         );
         sourceFiles.push(snapshotPath);
         const ageInDays = Math.floor((Date.now() - (await stat(snapshotPath)).mtimeMs) / 86_400_000);
-        if (ageInDays > 14) warnings.push(`The newest Raycast settings snapshot is ${ageInDays} days old`);
+        if (ageInDays > 14)
+          warnings.push(
+            `The newest Raycast settings snapshot is ${ageInDays} days old. Export fresh settings or check the snapshots directory in Extension Preferences.`,
+          );
       } else {
-        warnings.push("No Raycast settings snapshot was found");
+        warnings.push(
+          "No Raycast settings snapshot was found. Export Raycast settings or disable snapshot import in Extension Preferences.",
+        );
       }
     } catch (error) {
       warnings.push(`Raycast: ${error instanceof Error ? error.message : String(error)}`);
