@@ -2,11 +2,11 @@ import { environment, getPreferenceValues } from "@raycast/api";
 import { useCallback, useEffect, useState } from "react";
 import { loadShortcutMap } from "../data/load";
 import type { Preferences, ShortcutMap } from "../types";
-import { generateKeyboardPreview } from "./preview";
+import { generateKeyboardPreview, type KeyboardPreviewPaths } from "./preview";
 
 interface ShortcutMapState {
   data?: ShortcutMap;
-  previewPath?: string;
+  previews?: KeyboardPreviewPaths;
   error?: string;
   isLoading: boolean;
   refresh: () => void;
@@ -15,7 +15,7 @@ interface ShortcutMapState {
 export function useShortcutMap(): ShortcutMapState {
   const preferences = getPreferenceValues<Preferences>();
   const [data, setData] = useState<ShortcutMap>();
-  const [previewPath, setPreviewPath] = useState<string>();
+  const [previews, setPreviews] = useState<KeyboardPreviewPaths>();
   const [error, setError] = useState<string>();
   const [isLoading, setIsLoading] = useState(true);
   const [revision, setRevision] = useState(0);
@@ -28,10 +28,10 @@ export function useShortcutMap(): ShortcutMapState {
     setError(undefined);
     void loadShortcutMap(preferences)
       .then(async (nextData) => {
-        const nextPreviewPath = await generateKeyboardPreview(nextData, environment.supportPath);
+        const nextPreviews = await generateKeyboardPreview(nextData, environment.supportPath);
         if (!isActive) return;
         setData(nextData);
-        setPreviewPath(nextPreviewPath);
+        setPreviews(nextPreviews);
       })
       .catch((loadError: unknown) => {
         if (!isActive) return;
@@ -45,5 +45,5 @@ export function useShortcutMap(): ShortcutMapState {
     };
   }, [revision]);
 
-  return { data, previewPath, error, isLoading, refresh };
+  return { data, previews, error, isLoading, refresh };
 }

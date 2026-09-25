@@ -8,7 +8,7 @@ const shortcutMap = await loadShortcutMap({
   readCanvas: true,
   showUnassignedKeys: true,
 });
-const previewPath = await generateKeyboardPreview(shortcutMap, outputDirectory);
+const previews = await generateKeyboardPreview(shortcutMap, outputDirectory);
 const conflicts = [...shortcutMap.keys.values()]
   .filter((item) => item.assignments.length > 1)
   .map((item) => ({ key: item.key, titles: item.assignments.map((assignment) => assignment.title) }));
@@ -16,7 +16,7 @@ const conflicts = [...shortcutMap.keys.values()]
 console.log(
   JSON.stringify(
     {
-      previewPath,
+      previews,
       assignedKeys: shortcutMap.keys.size,
       conflicts,
       sources: shortcutMap.sourceFiles,

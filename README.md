@@ -8,7 +8,8 @@ Hyper Keyboard is a personal Raycast extension that turns configured Hyper short
 
 ## What it does
 
-- Renders a full keyboard image with app icons, empty keys, and conflict badges.
+- Renders a full keyboard image with prominent app icons, quiet empty keys, and conflict badges.
+- Switches to an overlapping two-part zoomed view, or opens the full-size image in Preview for free zooming.
 - Provides a searchable Raycast list with shortcut details and source metadata.
 - Resolves installed Raycast extension titles and icons from their local manifests.
 - Imports labels, notes, and images from the existing Hyper keyboard Canvas.

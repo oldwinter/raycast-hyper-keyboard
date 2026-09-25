@@ -11,7 +11,7 @@ export const KEYBOARD_ROWS: KeyboardRow[] = [
   { id: "top", title: "QWERTY", keys: "QWERTYUIOP".split(""), offset: 40 },
   { id: "home", title: "Home", keys: [..."ASDFGHJKL".split(""), ";", "Enter"], offset: 72 },
   { id: "bottom", title: "Bottom", keys: [..."ZXCVBNM".split(""), ",", ".", "/"], offset: 120 },
-  { id: "space", title: "Space", keys: ["Space"], offset: 590 },
+  { id: "space", title: "Space", keys: ["Space"], offset: 530 },
 ];
 
 export const PHYSICAL_KEYS = new Set(KEYBOARD_ROWS.flatMap((row) => row.keys));
