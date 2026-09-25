@@ -29,6 +29,8 @@ Raycast opens the extension in development mode. Use either command:
 - `Show Hyper Keyboard` for the visual global keyboard.
 - `Browse Hyper Shortcuts` for search, details, source files, and conflict inspection.
 
+When Browse has nothing to list — no assigned keys with **Show unassigned keys** off, or a search that matches nothing — Raycast shows an empty state with the next step: open Extension Preferences to turn unassigned keys on, add a Hyper shortcut, or try another query.
+
 ## Data sources
 
 Sources are merged in this order:

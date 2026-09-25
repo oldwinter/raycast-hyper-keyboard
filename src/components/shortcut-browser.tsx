@@ -1,5 +1,7 @@
 import { Action, ActionPanel, Color, Icon, Image, Keyboard, List, openExtensionPreferences } from "@raycast/api";
+import { useState } from "react";
 import { KEYBOARD_ROWS } from "../layout";
+import { browseEmptyState } from "../lib/empty-state";
 import type { Preferences, ShortcutAssignment, ShortcutMap } from "../types";
 
 interface ShortcutBrowserProps {
@@ -74,8 +76,21 @@ function ShortcutActions({
 }
 
 export function ShortcutBrowser({ shortcutMap, preferences, isLoading, onRefresh }: ShortcutBrowserProps) {
+  const [searchText, setSearchText] = useState("");
+  const empty = browseEmptyState(searchText);
+
   return (
-    <List isLoading={isLoading} isShowingDetail searchBarPlaceholder="Search a key, app, action, or source…">
+    <List
+      isLoading={isLoading}
+      isShowingDetail
+      searchBarPlaceholder="Search a key, app, action, or source…"
+      onSearchTextChange={setSearchText}
+    >
+      <List.EmptyView
+        icon={searchText.trim() ? Icon.MagnifyingGlass : Icon.Keyboard}
+        title={empty.title}
+        description={empty.description}
+      />
       {KEYBOARD_ROWS.map((row) => {
         const visibleKeys = row.keys.filter((key) => preferences.showUnassignedKeys || shortcutMap.keys.has(key));
         if (visibleKeys.length === 0) return null;
