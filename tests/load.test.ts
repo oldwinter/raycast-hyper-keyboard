@@ -102,7 +102,9 @@ describe("shortcut source merger", () => {
     });
 
     expect(result.sourceFiles).toEqual([]);
-    expect(result.warnings).toEqual([`Canvas file not found: ${missing}`]);
+    expect(result.warnings).toEqual([
+      `Canvas file not found: ${missing}. Check the Canvas path in Extension Preferences.`,
+    ]);
     expect(result.warnings.join("\n")).not.toMatch(/oldwinter-notes/);
   });
 });
