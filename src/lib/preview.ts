@@ -201,16 +201,17 @@ function renderKey(
   const accent = assignmentCount > 1 ? "#ff6b6b" : sourceColor(assignment?.source);
   const border = assignmentCount > 1 ? "#ff6b6b" : assigned ? "#424a55" : "#272c33";
   const fill = assigned ? "#191d23" : "#12151a";
+  const faceClass = assigned ? "key-face" : "key-face key-face-empty";
   const title = assignment ? truncateToPixels(assignment.title, width - 18, 14) : "";
   const description = truncateToPixels(displayDescription(assignment), width - 18, 10);
   const iconSize = geometry.height < 100 ? 43 : 54;
   const iconX = x + (width - iconSize) / 2;
   const iconY = geometry.y + (geometry.height < 100 ? 20 : 18);
   const iconMarkup = icon.dataUri
-    ? `<rect x="${iconX - 3}" y="${iconY - 3}" width="${iconSize + 6}" height="${iconSize + 6}" rx="14" fill="#252b34"/>
+    ? `<rect class="icon-chip" x="${iconX - 3}" y="${iconY - 3}" width="${iconSize + 6}" height="${iconSize + 6}" rx="14" fill="#252b34"/>
        <image href="${icon.dataUri}" x="${iconX}" y="${iconY}" width="${iconSize}" height="${iconSize}" preserveAspectRatio="xMidYMid meet"/>`
     : icon.emoji
-      ? `<rect x="${iconX - 3}" y="${iconY - 3}" width="${iconSize + 6}" height="${iconSize + 6}" rx="14" fill="#252b34"/>
+      ? `<rect class="icon-chip" x="${iconX - 3}" y="${iconY - 3}" width="${iconSize + 6}" height="${iconSize + 6}" rx="14" fill="#252b34"/>
          <text x="${x + width / 2}" y="${iconY + iconSize - 8}" text-anchor="middle" class="emoji">${escapeXml(icon.emoji)}</text>`
       : "";
   const conflict =
@@ -221,8 +222,8 @@ function renderKey(
   if (!assigned) {
     return `
     <g>
-      <rect x="${x}" y="${geometry.y + 3}" width="${width}" height="${geometry.height}" rx="13" fill="#060709" opacity="0.75"/>
-      <rect x="${x}" y="${geometry.y}" width="${width}" height="${geometry.height}" rx="13" fill="${fill}" stroke="${border}" stroke-width="1.5"/>
+      <rect class="key-shadow" x="${x}" y="${geometry.y + 3}" width="${width}" height="${geometry.height}" rx="13" fill="#060709" opacity="0.75"/>
+      <rect class="${faceClass}" x="${x}" y="${geometry.y}" width="${width}" height="${geometry.height}" rx="13" fill="${fill}" stroke="${border}" stroke-width="1.5"/>
       <text x="${x + width / 2}" y="${geometry.y + geometry.height / 2 + 7}" text-anchor="middle" class="unassigned-key">${escapeXml(key)}</text>
     </g>`;
   }
@@ -236,9 +237,9 @@ function renderKey(
 
   return `
     <g>
-      <rect x="${x}" y="${geometry.y + 4}" width="${width}" height="${geometry.height}" rx="13" fill="#050607" opacity="0.9"/>
-      <rect x="${x}" y="${geometry.y}" width="${width}" height="${geometry.height}" rx="13" fill="${fill}" stroke="${border}" stroke-width="1.5"/>
-      <rect x="${x + 10}" y="${geometry.y + geometry.height - 4}" width="${width - 20}" height="3" rx="1.5" fill="${accent}" opacity="0.9"/>
+      <rect class="key-shadow" x="${x}" y="${geometry.y + 4}" width="${width}" height="${geometry.height}" rx="13" fill="#050607" opacity="0.9"/>
+      <rect class="${faceClass}" x="${x}" y="${geometry.y}" width="${width}" height="${geometry.height}" rx="13" fill="${fill}" stroke="${border}" stroke-width="1.5"/>
+      <rect class="key-accent" x="${x + 10}" y="${geometry.y + geometry.height - 4}" width="${width - 20}" height="3" rx="1.5" fill="${accent}" opacity="0.9"/>
       <text x="${x + 11}" y="${geometry.y + 23}" class="key-label">${escapeXml(key)}</text>
       ${contentMarkup}
       ${conflict}
@@ -284,6 +285,25 @@ export async function renderKeyboardSvg(
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${viewport.width}" height="${viewport.height}" viewBox="${viewport.x} ${viewport.y} ${viewport.width} ${viewport.height}">
   <defs>
     <style>
+      :root {
+        color-scheme: light dark;
+        --canvas: #f5f2ea;
+        --frame: #ffffff;
+        --frame-border: #d8d4c9;
+        --text: #1d2129;
+        --muted: #5d6672;
+        --warning-text: #a8550a;
+        --chord-text: #4b5563;
+        --key-label-text: #2e3540;
+        --key-empty-text: #9aa3ad;
+        --description-text: #6a7480;
+        --key-fill: #ffffff;
+        --key-fill-empty: #e9e6dd;
+        --key-border: #c9cdd4;
+        --key-border-empty: #d8d4c9;
+        --key-shadow: #d6d2c7;
+        --icon-chip: #eef0f3;
+      }
       text { font-family: "SF Pro Display", "PingFang SC", "Helvetica Neue", Arial, sans-serif; letter-spacing: 0; }
       .heading { font-size: 38px; font-weight: 750; fill: #f7f8fa; }
       .summary { font-size: 17px; font-weight: 600; fill: #a9b1bc; }
@@ -296,10 +316,26 @@ export async function renderKeyboardSvg(
       .description { font-size: 10px; font-weight: 550; fill: #9da6b2; }
       .emoji { font-family: "Apple Color Emoji", sans-serif; font-size: 40px; }
       .badge { font-size: 12px; font-weight: 800; fill: #111214; }
+      @media (prefers-color-scheme: light) {
+        .canvas-bg { fill: var(--canvas); }
+        .frame { fill: var(--frame); stroke: var(--frame-border); }
+        .key-face { fill: var(--key-fill); stroke: var(--key-border); }
+        .key-face-empty { fill: var(--key-fill-empty); stroke: var(--key-border-empty); }
+        .key-shadow { fill: var(--key-shadow); }
+        .icon-chip { fill: var(--icon-chip); }
+        .heading { fill: var(--text); }
+        .title { fill: var(--text); }
+        .summary { fill: var(--muted); }
+        .description { fill: var(--description-text); }
+        .warning { fill: var(--warning-text); }
+        .chord { fill: var(--chord-text); }
+        .key-label { fill: var(--key-label-text); }
+        .unassigned-key { fill: var(--key-empty-text); }
+      }
     </style>
   </defs>
-  <rect width="${WIDTH}" height="${HEIGHT}" fill="#090b0e"/>
-  <rect x="18" y="18" width="${WIDTH - 36}" height="${HEIGHT - 36}" rx="24" fill="#0f1216" stroke="#272c34" stroke-width="1.5"/>
+  <rect class="canvas-bg" width="${WIDTH}" height="${HEIGHT}" fill="#090b0e"/>
+  <rect class="frame" x="18" y="18" width="${WIDTH - 36}" height="${HEIGHT - 36}" rx="24" fill="#0f1216" stroke="#272c34" stroke-width="1.5"/>
   <text x="52" y="72" class="heading">Hyper Keyboard</text>
   <text x="354" y="69" class="chord">⌃  ⌥  ⇧  ⌘</text>
   <text x="${WIDTH - 52}" y="53" text-anchor="end" class="summary">${assignedCount} mapped · ${conflictCount} conflicts</text>
