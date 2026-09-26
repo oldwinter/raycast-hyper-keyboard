@@ -102,9 +102,7 @@ export async function loadShortcutMap(preferences: Preferences): Promise<Shortcu
         warnings.push(`Canvas: ${error instanceof Error ? error.message : String(error)}`);
       }
     } else {
-      warnings.push(
-        `Canvas file not found: ${canvasPath}. Check the Canvas path in Extension Preferences.`,
-      );
+      warnings.push(`Canvas file not found: ${canvasPath}. Check the Canvas path in Extension Preferences.`);
     }
   }
 
