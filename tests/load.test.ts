@@ -80,6 +80,42 @@ describe("shortcut source merger", () => {
     );
   });
 
+  it("keeps distinct same-extension generic Raycast commands on one key as a conflict", async () => {
+    const root = await mkdtemp(path.join(os.tmpdir(), "hyper-loader-"));
+    const snapshotsDirectory = path.join(root, "snapshots");
+    await mkdir(snapshotsDirectory);
+    await writeFile(
+      path.join(snapshotsDirectory, "snapshot.json"),
+      JSON.stringify({
+        tables: {
+          commands: [
+            {
+              id: "c:r:quicklinks::-::quicklink-one",
+              extensionId: "e:r:quicklinks",
+              enabled: true,
+              macosHotkey: hyperHotkey(12),
+            },
+            {
+              id: "c:r:quicklinks::-::quicklink-two",
+              extensionId: "e:r:quicklinks",
+              enabled: true,
+              macosHotkey: hyperHotkey(12),
+            },
+          ],
+        },
+      }),
+    );
+
+    const result = await loadShortcutMap({
+      readCanvas: false,
+      readRaycastSnapshots: true,
+      raycastSnapshotsDirectory: snapshotsDirectory,
+      showUnassignedKeys: true,
+    });
+
+    expect(result.keys.get("Q")?.assignments).toHaveLength(2);
+  });
+
   it("skips Canvas when readCanvas is on but Canvas File is unset", async () => {
     const result = await loadShortcutMap({
       readCanvas: true,
