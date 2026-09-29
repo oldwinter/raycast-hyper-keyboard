@@ -142,6 +142,7 @@ describe("Raycast settings snapshot parser", () => {
         title: "Example",
         commands: [
           { name: "escape", title: "Escape", icon: "../../outside.png" },
+          { name: "absolute", title: "Absolute", icon: "/tmp/outside.png" },
           { name: "nested", title: "Nested", icon: "nested/icon.png" },
         ],
       }),
@@ -154,16 +155,26 @@ describe("Raycast settings snapshot parser", () => {
         macosHotkey: hotkey(0),
       },
       {
-        id: "c:n:" + uuid + "::-::nested",
+        id: "c:n:" + uuid + "::-::absolute",
         extensionId: "e:n:" + uuid,
         enabled: true,
         macosHotkey: hotkey(1),
+      },
+      {
+        id: "c:n:" + uuid + "::-::nested",
+        extensionId: "e:n:" + uuid,
+        enabled: true,
+        macosHotkey: hotkey(2),
       },
     ]);
 
     const assignments = await parseRaycastSnapshot(snapshotPath, extensionsDirectory);
     expect(assignments[0].icon).toEqual({ kind: "emoji", value: "🧩" });
-    expect(assignments[1].icon).toEqual({ kind: "file", value: path.join(assetsDirectory, "nested", "icon.png") });
+    expect(assignments[1].icon).toEqual({ kind: "emoji", value: "🧩" });
+    expect(assignments[2].icon).toEqual({
+      kind: "file",
+      value: path.join(assetsDirectory, "nested", "icon.png"),
+    });
   });
 
   it("falls back per command when an extension manifest is malformed", async () => {

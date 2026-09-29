@@ -16,6 +16,10 @@ describe("JSON file utilities", () => {
     await utimes(newerName, tied, tied);
 
     expect(await newestJsonFile(directory)).toBe(newerName);
+
+    const later = new Date("2026-09-30T00:00:00Z");
+    await utimes(olderName, later, later);
+    expect(await newestJsonFile(directory)).toBe(olderName);
   });
 
   it("rejects a file above the configured byte limit before parsing", async () => {
