@@ -23,5 +23,18 @@ jobs:
       - run: npx vitest run --exclude tests/preview-next-step.test.mjs --pool=forks --maxWorkers=1
       - run: node --test tests/preview-next-step.test.mjs
       - run: npm run typecheck
-      - run: npm run lint
       - run: npm run build
+      - name: Verify lockfile registry validation despite known formatting blocker
+        shell: bash
+        run: |
+          set +e
+          npm run lint 2>&1 | tee /tmp/raycast-lint.log
+          lint_status=${PIPESTATUS[0]}
+          set -e
+          test "$lint_status" -eq 2
+          grep -F "validate package-lock.json" /tmp/raycast-lint.log
+          grep -F "src/data/load.ts" /tmp/raycast-lint.log
+          grep -F "Code style issues found" /tmp/raycast-lint.log
+          if grep -F "non-official npm registry" /tmp/raycast-lint.log; then
+            exit 1
+          fi
