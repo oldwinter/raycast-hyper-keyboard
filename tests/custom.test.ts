@@ -20,8 +20,17 @@ describe("custom JSON parser", () => {
     );
 
     const assignments = await parseCustomShortcuts(configPath);
-    expect(assignments[0]).toMatchObject({ key: "Space", title: "Notes", replace: false, icon: { kind: "emoji", value: "📝" } });
-    expect(assignments[1]).toMatchObject({ key: "Q", replace: true, icon: { kind: "file", value: path.join(directory, "icons/q.png") } });
+    expect(assignments[0]).toMatchObject({
+      key: "Space",
+      title: "Notes",
+      replace: false,
+      icon: { kind: "emoji", value: "📝" },
+    });
+    expect(assignments[1]).toMatchObject({
+      key: "Q",
+      replace: true,
+      icon: { kind: "file", value: path.join(directory, "icons/q.png") },
+    });
   });
 
   it("rejects unsupported keys", async () => {

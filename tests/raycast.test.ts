@@ -75,7 +75,11 @@ describe("Raycast settings snapshot parser", () => {
 
     const assignments = await parseRaycastSnapshot(snapshotPath, extensionsDirectory);
     expect(assignments).toHaveLength(3);
-    expect(assignments[0]).toMatchObject({ key: "A", title: "Arc", icon: { kind: "app", value: "/Applications/Arc.app" } });
+    expect(assignments[0]).toMatchObject({
+      key: "A",
+      title: "Arc",
+      icon: { kind: "app", value: "/Applications/Arc.app" },
+    });
     expect(assignments[1]).toMatchObject({ key: "2", title: "Search Arc" });
     expect(assignments[2]).toMatchObject({ key: "6", title: "Emoji Search", icon: { kind: "emoji", value: "😀" } });
   });

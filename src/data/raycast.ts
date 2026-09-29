@@ -106,7 +106,10 @@ function applicationAssignment(
   };
 }
 
-async function extensionIconPath(extensionDirectory: string, iconName: string | undefined): Promise<string | undefined> {
+async function extensionIconPath(
+  extensionDirectory: string,
+  iconName: string | undefined,
+): Promise<string | undefined> {
   if (!iconName || path.isAbsolute(iconName)) return undefined;
   try {
     const assetsDirectory = await realpath(path.resolve(extensionDirectory, "assets"));
