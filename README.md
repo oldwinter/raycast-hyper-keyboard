@@ -50,6 +50,8 @@ Canvas is not auto-detected. Set Preferences → Canvas File to import one. A pe
 
 Every other path can be overridden in Raycast Preferences. Raycast does not expose a public API for enumerating global command hotkeys, so the extension deliberately reads the newest cloud-sync snapshot rather than depending on the private live database. Snapshot age is shown as a warning.
 
+JSON-based sources are capped at 16 MiB. Oversized or invalid files are reported as source warnings so the remaining available sources can still render.
+
 ## Custom JSON
 
 Start from [examples/hyper-shortcuts.example.json](examples/hyper-shortcuts.example.json):

@@ -1,7 +1,7 @@
 import { stat } from "node:fs/promises";
 import { parseCanvasShortcuts } from "./canvas";
 import { parseCustomShortcuts } from "./custom";
-import { defaultRaycastSnapshotsDirectory, findLatestRaycastSnapshot, parseRaycastSnapshot } from "./raycast";
+import { defaultRaycastSnapshotsDirectory, findUsableRaycastSnapshot, parseRaycastSnapshot } from "./raycast";
 import type { Preferences, ShortcutAssignment, ShortcutMap } from "../types";
 import { keyOrder } from "../layout";
 import { pathExists } from "../lib/files";
@@ -111,7 +111,11 @@ export async function loadShortcutMap(preferences: Preferences): Promise<Shortcu
   if (preferences.readRaycastSnapshots) {
     const directory = preferences.raycastSnapshotsDirectory || defaultRaycastSnapshotsDirectory();
     try {
-      const snapshotPath = await findLatestRaycastSnapshot(directory);
+      const selection = await findUsableRaycastSnapshot(directory);
+      const snapshotPath = selection.snapshotPath;
+      if (selection.skipped.length > 0) {
+        warnings.push("Skipped invalid Raycast snapshots: " + selection.skipped.join("; "));
+      }
       if (snapshotPath) {
         (await parseRaycastSnapshot(snapshotPath)).forEach((assignment) =>
           mergeRaycastAssignment(assignments, assignment),

@@ -15,14 +15,30 @@ interface CanvasNode {
   height: number;
 }
 
-interface CanvasDocument {
-  nodes: CanvasNode[];
-}
-
 interface KeyNode {
   node: CanvasNode;
   key: string;
   body: string;
+}
+
+const CANVAS_NODE_TYPES = new Set<CanvasNode["type"]>(["text", "file", "link", "group"]);
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function isCanvasNode(value: unknown): value is CanvasNode {
+  if (!isRecord(value) || typeof value.id !== "string" || !CANVAS_NODE_TYPES.has(value.type as CanvasNode["type"])) {
+    return false;
+  }
+  if (
+    ![value.x, value.y, value.width, value.height].every(
+      (number) => typeof number === "number" && Number.isFinite(number),
+    )
+  ) {
+    return false;
+  }
+  return [value.text, value.file, value.url].every((field) => field === undefined || typeof field === "string");
 }
 
 function parseKeyNode(node: CanvasNode): KeyNode | undefined {
@@ -80,11 +96,12 @@ function iconFromNode(node: CanvasNode | undefined, canvasPath: string): IconRef
 }
 
 export async function parseCanvasShortcuts(canvasPath: string): Promise<ShortcutAssignment[]> {
-  const document = await readJsonFile<CanvasDocument>(canvasPath);
-  if (!Array.isArray(document.nodes)) throw new Error("Canvas does not contain a nodes array");
+  const document = await readJsonFile<unknown>(canvasPath);
+  if (!isRecord(document) || !Array.isArray(document.nodes)) throw new Error("Canvas does not contain a nodes array");
+  const nodes = document.nodes.filter(isCanvasNode);
 
-  const keyNodes = document.nodes.map(parseKeyNode).filter((entry): entry is KeyNode => Boolean(entry));
-  const imageNodes = document.nodes.filter(isImageNode);
+  const keyNodes = nodes.map(parseKeyNode).filter((entry): entry is KeyNode => Boolean(entry));
+  const imageNodes = nodes.filter(isImageNode);
 
   return keyNodes
     .filter(({ body }) => body.length > 0)

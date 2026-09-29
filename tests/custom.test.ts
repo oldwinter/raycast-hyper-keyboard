@@ -30,4 +30,17 @@ describe("custom JSON parser", () => {
     await writeFile(configPath, JSON.stringify({ version: 1, shortcuts: [{ key: "Escape", title: "Nope" }] }));
     await expect(parseCustomShortcuts(configPath)).rejects.toThrow("Unsupported key");
   });
+
+  it("reports indexed schema errors for malformed entries", async () => {
+    const directory = await mkdtemp(path.join(os.tmpdir(), "hyper-custom-schema-"));
+    const configPath = path.join(directory, "shortcuts.json");
+    await writeFile(configPath, JSON.stringify({ version: 1, shortcuts: [{ key: "A", title: "Valid" }, null] }));
+    await expect(parseCustomShortcuts(configPath)).rejects.toThrow("shortcuts[1] must be an object");
+
+    await writeFile(
+      configPath,
+      JSON.stringify({ version: 1, shortcuts: [{ key: "A", title: "Invalid", description: 7 }] }),
+    );
+    await expect(parseCustomShortcuts(configPath)).rejects.toThrow("shortcuts[0].description must be a string");
+  });
 });

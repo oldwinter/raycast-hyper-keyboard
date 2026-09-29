@@ -31,4 +31,24 @@ describe("Canvas shortcut parser", () => {
     expect(assignments[0].icon).toEqual({ kind: "file", value: path.join(imageDirectory, "arc.png") });
     expect(assignments[1]).toMatchObject({ key: ".", title: "ai command：语法检查" });
   });
+
+  it("ignores malformed nodes while keeping valid shortcuts", async () => {
+    const root = await mkdtemp(path.join(os.tmpdir(), "hyper-canvas-schema-"));
+    const canvasPath = path.join(root, "hyper.canvas");
+    await writeFile(
+      canvasPath,
+      JSON.stringify({
+        nodes: [
+          null,
+          "bad-node",
+          { id: "missing-geometry", type: "text", text: "## B\nBroken" },
+          { id: "valid", type: "text", text: "## A\nAvailable", x: 0, y: 0, width: 160, height: 160 },
+        ],
+      }),
+    );
+
+    await expect(parseCanvasShortcuts(canvasPath)).resolves.toEqual([
+      expect.objectContaining({ key: "A", title: "Available" }),
+    ]);
+  });
 });
