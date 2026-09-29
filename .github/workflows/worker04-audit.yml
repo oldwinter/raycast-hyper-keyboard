@@ -1,0 +1,47 @@
+name: Worker 04 Audit
+
+on:
+  push:
+    branches: ["worker04/input-recovery-hardening"]
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          cache: npm
+          node-version: 22
+      - run: npm ci
+      - name: Check formatting outside the existing load.ts blocker
+        run: >-
+          npx prettier --check README.md src/lib/files.ts src/data/custom.ts src/data/canvas.ts
+          src/data/raycast.ts tests/files.test.ts tests/custom.test.ts tests/canvas.test.ts
+          tests/raycast.test.ts tests/load.test.ts
+      - run: npx vitest run --exclude tests/preview-next-step.test.mjs --pool=forks --maxWorkers=1
+      - run: node --test tests/preview-next-step.test.mjs
+      - run: npm run typecheck
+      - run: npm run build
+      - name: Verify Raycast lint has only the existing PR 15 blocker
+        shell: bash
+        run: |
+          set -o pipefail
+          set +e
+          npm run lint 2>&1 | tee /tmp/raycast-lint.log
+          lint_status=$?
+          set -e
+          test "$lint_status" -eq 2
+          grep -F "validate package-lock.json" /tmp/raycast-lint.log
+          grep -F "Code style issues found" /tmp/raycast-lint.log
+          if grep -F "non-official npm registry" /tmp/raycast-lint.log; then
+            exit 1
+          fi
+          test "$(grep -Ec '^/home/runner/work/.+\.(ts|tsx|js|mjs)$' /tmp/raycast-lint.log)" -eq 1
+          grep -Eq '^/home/runner/work/.+/src/data/load.ts$' /tmp/raycast-lint.log
