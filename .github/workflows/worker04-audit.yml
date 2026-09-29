@@ -20,11 +20,12 @@ jobs:
           cache: npm
           node-version: 22
       - run: npm ci
-      - name: Check formatting outside the existing load.ts blocker
-        run: >-
-          npx prettier --check README.md src/lib/files.ts src/data/custom.ts src/data/canvas.ts
-          src/data/raycast.ts tests/files.test.ts tests/custom.test.ts tests/canvas.test.ts
-          tests/raycast.test.ts tests/load.test.ts
+      - name: Print official Prettier diff
+        shell: bash
+        run: |
+          npx prettier --write src/data/raycast.ts tests/custom.test.ts tests/raycast.test.ts
+          git diff -- src/data/raycast.ts tests/custom.test.ts tests/raycast.test.ts
+          exit 1
       - run: npx vitest run --exclude tests/preview-next-step.test.mjs --pool=forks --maxWorkers=1
       - run: node --test tests/preview-next-step.test.mjs
       - run: npm run typecheck
