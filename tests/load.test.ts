@@ -107,4 +107,44 @@ describe("shortcut source merger", () => {
     ]);
     expect(result.warnings.join("\n")).not.toMatch(/oldwinter-notes/);
   });
+
+  it("falls back to an older valid snapshot when the newest export is malformed", async () => {
+    const root = await mkdtemp(path.join(os.tmpdir(), "hyper-loader-fallback-"));
+    const snapshotsDirectory = path.join(root, "snapshots");
+    await mkdir(snapshotsDirectory);
+    const validPath = path.join(snapshotsDirectory, "2026-09-28.json");
+    const invalidPath = path.join(snapshotsDirectory, "2026-09-29.json");
+    await writeFile(
+      validPath,
+      JSON.stringify({
+        tables: {
+          commands: [
+            {
+              id: "c:r:emoji-picker::-::searchEmoji",
+              extensionId: "e:r:emoji-picker",
+              enabled: true,
+              macosHotkey: hyperHotkey(0),
+            },
+          ],
+        },
+      }),
+    );
+    await writeFile(invalidPath, "{truncated");
+    const older = new Date("2026-09-28T12:00:00Z");
+    const newer = new Date("2026-09-29T12:00:00Z");
+    await utimes(validPath, older, older);
+    await utimes(invalidPath, newer, newer);
+
+    const result = await loadShortcutMap({
+      readCanvas: false,
+      readRaycastSnapshots: true,
+      raycastSnapshotsDirectory: snapshotsDirectory,
+      showUnassignedKeys: true,
+    });
+
+    expect(result.keys.get("A")?.assignments[0]).toMatchObject({ title: "Emoji Search", source: "raycast" });
+    expect(result.sourceFiles).toContain(validPath);
+    expect(result.warnings.join("\n")).toContain("2026-09-29.json");
+    expect(result.warnings.join("\n")).toContain("Skipped invalid Raycast snapshots");
+  });
 });

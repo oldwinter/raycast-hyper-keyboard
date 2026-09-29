@@ -20,8 +20,17 @@ describe("custom JSON parser", () => {
     );
 
     const assignments = await parseCustomShortcuts(configPath);
-    expect(assignments[0]).toMatchObject({ key: "Space", title: "Notes", replace: false, icon: { kind: "emoji", value: "📝" } });
-    expect(assignments[1]).toMatchObject({ key: "Q", replace: true, icon: { kind: "file", value: path.join(directory, "icons/q.png") } });
+    expect(assignments[0]).toMatchObject({
+      key: "Space",
+      title: "Notes",
+      replace: false,
+      icon: { kind: "emoji", value: "📝" },
+    });
+    expect(assignments[1]).toMatchObject({
+      key: "Q",
+      replace: true,
+      icon: { kind: "file", value: path.join(directory, "icons/q.png") },
+    });
   });
 
   it("rejects unsupported keys", async () => {
@@ -29,5 +38,18 @@ describe("custom JSON parser", () => {
     const configPath = path.join(directory, "shortcuts.json");
     await writeFile(configPath, JSON.stringify({ version: 1, shortcuts: [{ key: "Escape", title: "Nope" }] }));
     await expect(parseCustomShortcuts(configPath)).rejects.toThrow("Unsupported key");
+  });
+
+  it("reports indexed schema errors for malformed entries", async () => {
+    const directory = await mkdtemp(path.join(os.tmpdir(), "hyper-custom-schema-"));
+    const configPath = path.join(directory, "shortcuts.json");
+    await writeFile(configPath, JSON.stringify({ version: 1, shortcuts: [{ key: "A", title: "Valid" }, null] }));
+    await expect(parseCustomShortcuts(configPath)).rejects.toThrow("shortcuts[1] must be an object");
+
+    await writeFile(
+      configPath,
+      JSON.stringify({ version: 1, shortcuts: [{ key: "A", title: "Invalid", description: 7 }] }),
+    );
+    await expect(parseCustomShortcuts(configPath)).rejects.toThrow("shortcuts[0].description must be a string");
   });
 });
