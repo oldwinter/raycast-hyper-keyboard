@@ -1,0 +1,26 @@
+name: Worker 04 Audit
+
+on:
+  push:
+    branches: ["worker04/official-lock-registry"]
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          cache: npm
+          node-version: 22
+      - run: npm ci
+      - run: npm test -- --pool=forks --maxWorkers=1
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm run build
