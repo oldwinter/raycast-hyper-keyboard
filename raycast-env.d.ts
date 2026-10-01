@@ -38,3 +38,4 @@ declare namespace Arguments {
   /** Arguments passed to the `browse-hyper-shortcuts` command */
   export type BrowseHyperShortcuts = {}
 }
+
