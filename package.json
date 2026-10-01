@@ -83,7 +83,7 @@
     "lint": "ray lint",
     "fix-lint": "ray lint --fix",
     "preview": "node scripts/preview.mjs",
-    "deps": "npm install -D vite-node",
+    "deps": "npm install --no-save --package-lock=false vite-node",
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit"
