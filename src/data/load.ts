@@ -49,12 +49,6 @@ function addAssignment(map: Map<string, ShortcutAssignment[]>, assignment: Short
 
 function mergeRaycastAssignment(map: Map<string, ShortcutAssignment[]>, raycast: ShortcutAssignment): void {
   const current = map.get(raycast.key) ?? [];
-  if (
-    isGenericRaycastTitle(raycast.title) &&
-    current.some((candidate) => candidate.source === "raycast" && candidate.extensionId === raycast.extensionId)
-  ) {
-    return;
-  }
   const canvasIndex = current.findIndex(
     (candidate) =>
       candidate.source === "canvas" &&
@@ -80,7 +74,9 @@ function mergeRaycastAssignment(map: Map<string, ShortcutAssignment[]>, raycast:
 function dedupeAssignments(assignments: ShortcutAssignment[]): ShortcutAssignment[] {
   const seen = new Set<string>();
   return assignments.filter((assignment) => {
-    const identity = `${comparable(assignment.title)}:${assignment.icon?.kind ?? ""}:${assignment.icon?.value ?? ""}`;
+    const identity =
+      assignment.commandId ??
+      `${comparable(assignment.title)}:${assignment.icon?.kind ?? ""}:${assignment.icon?.value ?? ""}`;
     if (seen.has(identity)) return false;
     seen.add(identity);
     return true;
