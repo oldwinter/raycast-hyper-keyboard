@@ -12,7 +12,35 @@ interface ShortcutMapState {
   refresh: () => void;
 }
 
-export function useShortcutMap(): ShortcutMapState {
+export interface ShortcutMapLoadResult {
+  data: ShortcutMap;
+  previews?: KeyboardPreviewPaths;
+}
+
+export async function loadShortcutMapState(
+  preferences: Preferences,
+  options: { previews: boolean; supportPath: string },
+): Promise<ShortcutMapLoadResult> {
+  const data = await loadShortcutMap(preferences);
+  if (!options.previews) return { data };
+  try {
+    return { data, previews: await generateKeyboardPreview(data, options.supportPath) };
+  } catch (previewError) {
+    const message = previewError instanceof Error ? previewError.message : String(previewError);
+    return {
+      data: {
+        ...data,
+        warnings: [
+          ...data.warnings,
+          `Keyboard preview could not be generated: ${message}. Shortcut data is unaffected; run Refresh Keymap to retry.`,
+        ],
+      },
+    };
+  }
+}
+
+export function useShortcutMap(options: { previews?: boolean } = {}): ShortcutMapState {
+  const withPreviews = options.previews ?? false;
   const preferences = getPreferenceValues<Preferences>();
   const preferencesSignature = JSON.stringify(preferences);
   const [data, setData] = useState<ShortcutMap>();
@@ -27,12 +55,14 @@ export function useShortcutMap(): ShortcutMapState {
     let isActive = true;
     setIsLoading(true);
     setError(undefined);
-    void loadShortcutMap(JSON.parse(preferencesSignature) as Preferences)
-      .then(async (nextData) => {
-        const nextPreviews = await generateKeyboardPreview(nextData, environment.supportPath);
+    void loadShortcutMapState(JSON.parse(preferencesSignature) as Preferences, {
+      previews: withPreviews,
+      supportPath: environment.supportPath,
+    })
+      .then((result) => {
         if (!isActive) return;
-        setData(nextData);
-        setPreviews(nextPreviews);
+        setData(result.data);
+        if (result.previews) setPreviews(result.previews);
       })
       .catch((loadError: unknown) => {
         if (!isActive) return;
@@ -44,7 +74,7 @@ export function useShortcutMap(): ShortcutMapState {
     return () => {
       isActive = false;
     };
-  }, [revision, preferencesSignature]);
+  }, [revision, preferencesSignature, withPreviews]);
 
   return { data, previews, error, isLoading, refresh };
 }
