@@ -43,6 +43,35 @@ describe("keyboard preview", () => {
     expect(svg).not.toContain("Unassigned");
   });
 
+  it("falls back to the keyboard emoji for an unparseable Canvas link icon URL", async () => {
+    const iconDirectory = await mkdtemp(path.join(os.tmpdir(), "hyper-preview-"));
+    const map: ShortcutMap = {
+      keys: new Map([
+        [
+          "B",
+          {
+            key: "B",
+            assignments: [
+              {
+                key: "B",
+                title: "Broken Icon",
+                source: "canvas",
+                icon: { kind: "url", value: "icons/app.png" },
+              },
+            ],
+          },
+        ],
+      ]),
+      sourceFiles: [],
+      warnings: [],
+      loadedAt: new Date("2026-08-31T00:00:00Z"),
+    };
+    const svg = await renderKeyboardSvg(map, iconDirectory);
+
+    expect(svg).toContain("Broken Icon");
+    expect(svg).toContain("⌨️");
+  });
+
   it("renders a cropped viewport for the zoomed presentation", async () => {
     const map: ShortcutMap = {
       keys: new Map(),
