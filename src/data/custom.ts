@@ -40,7 +40,13 @@ function iconReference(
   if (appPath) return { kind: "app", value: appPath };
   if (!value) return undefined;
   if (/^https:\/\//i.test(value)) return { kind: "url", value };
-  if (value.length <= 4 && !/[/.]/.test(value)) return { kind: "emoji", value };
+  if (
+    /^(?:\p{Extended_Pictographic}|\p{Emoji_Presentation}|\u200d|\ufe0f|[\u{e0020}-\u{e007f}]|[0-9#*]\ufe0f?\u20e3)+$/u.test(
+      value,
+    )
+  ) {
+    return { kind: "emoji", value };
+  }
   return { kind: "file", value: path.isAbsolute(value) ? value : path.resolve(path.dirname(configPath), value) };
 }
 

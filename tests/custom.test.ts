@@ -33,6 +33,35 @@ describe("custom JSON parser", () => {
     });
   });
 
+  it.each([
+    "👨‍💻",
+    "🏳️‍🌈",
+    "👨‍👩‍👧",
+    "👩🏽‍💻",
+    "🇺🇸",
+    "🏴\u{e0067}\u{e0062}\u{e0065}\u{e006e}\u{e0067}\u{e007f}",
+    "1️⃣",
+  ])("recognizes emoji icon %s", async (icon) => {
+    const directory = await mkdtemp(path.join(os.tmpdir(), "hyper-custom-emoji-"));
+    const configPath = path.join(directory, "shortcuts.json");
+    await writeFile(configPath, JSON.stringify({ version: 1, shortcuts: [{ key: "q", title: "Queue", icon }] }));
+
+    const [assignment] = await parseCustomShortcuts(configPath);
+    expect(assignment.icon).toEqual({ kind: "emoji", value: icon });
+  });
+
+  it.each(["./x.png", "icons/q.png", "/tmp/q.png", "👨‍💻.png", "👨‍💻-icon", "icon", "123"])(
+    "resolves file icon %s",
+    async (icon) => {
+      const directory = await mkdtemp(path.join(os.tmpdir(), "hyper-custom-file-"));
+      const configPath = path.join(directory, "shortcuts.json");
+      await writeFile(configPath, JSON.stringify({ version: 1, shortcuts: [{ key: "q", title: "Queue", icon }] }));
+
+      const [assignment] = await parseCustomShortcuts(configPath);
+      expect(assignment.icon).toEqual({ kind: "file", value: path.resolve(directory, icon) });
+    },
+  );
+
   it("rejects unsupported keys", async () => {
     const directory = await mkdtemp(path.join(os.tmpdir(), "hyper-custom-invalid-"));
     const configPath = path.join(directory, "shortcuts.json");
