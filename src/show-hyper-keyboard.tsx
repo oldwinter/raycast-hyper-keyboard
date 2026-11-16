@@ -15,7 +15,7 @@ import { useShortcutMap } from "./lib/use-shortcut-map";
 
 export default function ShowHyperKeyboard() {
   const preferences = getPreferenceValues<Preferences>();
-  const { data, previews, error, isLoading, refresh } = useShortcutMap();
+  const { data, previews, error, isLoading, refresh } = useShortcutMap({ previews: true });
   const { push } = useNavigation();
   const [isZoomed, setIsZoomed] = useState(false);
   const version = data?.loadedAt.getTime() ?? 0;
@@ -38,7 +38,9 @@ export default function ShowHyperKeyboard() {
     ? `# Unable to load Hyper Keyboard\n\n${error}\n\nCheck your source paths in **Extension Preferences**, then run **Refresh Keymap** below.`
     : image
       ? `${image}${warningMarkdown}`
-      : "# Hyper Keyboard\n\nReading your configured shortcuts…";
+      : isLoading
+        ? "# Hyper Keyboard\n\nReading your configured shortcuts…"
+        : `# Hyper Keyboard${warningMarkdown}`;
 
   return (
     <Detail
