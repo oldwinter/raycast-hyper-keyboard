@@ -138,8 +138,15 @@ async function appIconPath(appPath: string, iconDirectory: string): Promise<stri
 }
 
 async function remoteIconPath(url: string, iconDirectory: string): Promise<string | undefined> {
+  let parsed: URL;
+  try {
+    parsed = new URL(url);
+  } catch {
+    return undefined;
+  }
+  if (parsed.protocol !== "http:" && parsed.protocol !== "https:") return undefined;
   const digest = createHash("sha1").update(url).digest("hex").slice(0, 12);
-  const extension = path.extname(new URL(url).pathname) || ".png";
+  const extension = path.extname(parsed.pathname) || ".png";
   const cachedPath = path.join(iconDirectory, `${digest}${extension}`);
   try {
     await readFile(cachedPath);
