@@ -12,6 +12,8 @@ describe("npm run preview next step", () => {
     const pkg = JSON.parse(readFileSync(path.join(root, "package.json"), "utf8"));
     assert.equal(pkg.scripts.preview, "node scripts/preview.mjs");
     assert.match(pkg.scripts.deps, /vite-node/);
+    assert.match(pkg.scripts.deps, /--no-save\b/);
+    assert.match(pkg.scripts.deps, /--package-lock=false\b/);
     assert.doesNotMatch(pkg.scripts.preview, /vite-node/);
     assert.doesNotMatch(JSON.stringify(pkg.devDependencies ?? {}), /vite-node/);
   });
